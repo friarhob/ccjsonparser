@@ -11,7 +11,7 @@ This is still a work in progress. So far, we have:
 Validate | Done
 :--|:-:
 `{}` | ✓
-String keys and string values | 
+String keys and string values | ✓
 String, numeric, boolean and null values | 
 Object and array values | 
 Lists of JSONs | 
