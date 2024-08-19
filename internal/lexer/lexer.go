@@ -20,6 +20,26 @@ func StartLexer(file *os.File) {
 	buffer = adt.NewQueue()
 }
 
+func consumeString() error {
+	for {
+		nextRune, _, err := reader.ReadRune()
+		if err != nil {
+			return err
+		}
+
+		if nextRune == '\\' {
+			_, _, err := reader.ReadRune()
+			if err != nil {
+				return err
+			}
+		}
+
+		if nextRune == '"' {
+			return nil
+		}
+	}
+}
+
 func generateNextToken() {
 	var nextRune rune
 
@@ -45,6 +65,20 @@ func generateNextToken() {
 		buffer.Enqueue(tokentypes.StartJSON)
 	case '}':
 		buffer.Enqueue(tokentypes.EndJSON)
+	case ':':
+		buffer.Enqueue(tokentypes.Colon)
+	case ',':
+		buffer.Enqueue(tokentypes.Comma)
+	case '"':
+		err := consumeString()
+		if err != nil {
+			if err == io.EOF {
+				buffer.Enqueue(tokentypes.Invalid)
+				return
+			}
+			os.Exit(int(exitcodes.ErrorReadingFile))
+		}
+		buffer.Enqueue(tokentypes.String)
 	default:
 		buffer.Enqueue(tokentypes.Invalid)
 	}
