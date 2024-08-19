@@ -7,6 +7,9 @@ const (
 	EOF
 	StartJSON
 	EndJSON
+	String
+	Colon
+	Comma
 )
 
 var names = [...]string{
@@ -14,6 +17,9 @@ var names = [...]string{
 	"EOF",
 	"StartJSON",
 	"EndJSON",
+	"String",
+	"Colon",
+	"Comma",
 }
 
 func (t Token) String() string {
