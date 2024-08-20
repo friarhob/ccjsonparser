@@ -12,6 +12,7 @@ const (
 	Comma
 	Boolean
 	Null
+	Number
 )
 
 var names = [...]string{
@@ -24,6 +25,7 @@ var names = [...]string{
 	"Comma",
 	"Boolean",
 	"Null",
+	"Number",
 }
 
 func (t Token) String() string {

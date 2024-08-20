@@ -89,6 +89,220 @@ func consumeReservedWord(firstRune rune) (tokentypes.Token, error) {
 	return resToken, nil
 }
 
+func consumeNumber(firstRune rune) error {
+	type state int
+	const (
+		stateInvalid state = iota
+		stateNegative
+		stateInteger
+		stateZero
+		stateDecimal
+		stateDecimalValue
+		stateExponential
+		stateExponentialSignal
+		stateExponentialValue
+	)
+
+	var curState state
+	invalidError := errors.New("invalid number")
+
+	switch firstRune {
+	case '-':
+		curState = stateNegative
+	case '1', '2', '3', '4', '5', '6', '7', '8', '9':
+		curState = stateInteger
+	case '0':
+		curState = stateZero
+	default:
+		curState = stateInvalid
+	}
+
+	for {
+		switch curState {
+
+		case stateInvalid:
+			return invalidError
+
+		case stateNegative:
+			nextRune, err := reader.PopRune()
+			if err != nil {
+				if err == io.EOF {
+					err = invalidError
+				}
+				return invalidError
+			}
+
+			switch nextRune {
+			case '.':
+				curState = stateDecimal
+			case '1', '2', '3', '4', '5', '6', '7', '8', '9':
+				curState = stateInteger
+			case '0':
+				curState = stateZero
+			default:
+				curState = stateInvalid
+			}
+
+		case stateZero:
+			nextRune, err := reader.PeekRune()
+			if err != nil {
+				if err == io.EOF {
+					return nil
+				}
+				return invalidError
+			}
+
+			if unicode.IsSpace(nextRune) || nextRune == ',' {
+				return nil
+			}
+
+			nextRune, err = reader.PopRune()
+			if err != nil {
+				os.Exit(int(exitcodes.ErrorReadingFile))
+			}
+
+			switch nextRune {
+			case '.':
+				curState = stateDecimal
+			case 'e', 'E':
+				curState = stateExponential
+			default:
+				curState = stateInvalid
+			}
+
+		case stateInteger:
+			nextRune, err := reader.PeekRune()
+			if err != nil {
+				if err == io.EOF {
+					return nil
+				}
+				return invalidError
+			}
+
+			if unicode.IsSpace(nextRune) || nextRune == ',' {
+				return nil
+			}
+
+			nextRune, err = reader.PopRune()
+			if err != nil {
+				os.Exit(int(exitcodes.ErrorReadingFile))
+			}
+
+			switch nextRune {
+			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+			case '.':
+				curState = stateDecimal
+			case 'e', 'E':
+				curState = stateExponential
+			default:
+				curState = stateInvalid
+			}
+
+		case stateDecimal:
+			nextRune, err := reader.PopRune()
+			if err != nil {
+				if err == io.EOF {
+					err = invalidError
+				}
+				return invalidError
+			}
+
+			switch nextRune {
+			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+				curState = stateDecimalValue
+			default:
+				curState = stateInvalid
+			}
+
+		case stateDecimalValue:
+			nextRune, err := reader.PeekRune()
+			if err != nil {
+				if err == io.EOF {
+					return nil
+				}
+				return invalidError
+			}
+
+			if unicode.IsSpace(nextRune) || nextRune == ',' {
+				return nil
+			}
+
+			nextRune, err = reader.PopRune()
+			if err != nil {
+				os.Exit(int(exitcodes.ErrorReadingFile))
+			}
+
+			switch nextRune {
+			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+			case 'e', 'E':
+				curState = stateExponential
+			default:
+				curState = stateInvalid
+
+			}
+
+		case stateExponential:
+			nextRune, err := reader.PopRune()
+			if err != nil {
+				if err == io.EOF {
+					err = invalidError
+				}
+				return invalidError
+			}
+
+			switch nextRune {
+			case '1', '2', '3', '4', '5', '6', '7', '8', '9':
+				curState = stateExponentialValue
+			case '+', '-':
+				curState = stateExponentialSignal
+			default:
+				curState = stateInvalid
+			}
+
+		case stateExponentialSignal:
+			nextRune, err := reader.PopRune()
+			if err != nil {
+				if err == io.EOF {
+					err = invalidError
+				}
+				return invalidError
+			}
+
+			switch nextRune {
+			case '1', '2', '3', '4', '5', '6', '7', '8', '9':
+				curState = stateExponentialValue
+			default:
+				curState = stateInvalid
+			}
+
+		case stateExponentialValue:
+			nextRune, err := reader.PeekRune()
+			if err != nil {
+				if err == io.EOF {
+					return nil
+				}
+				return invalidError
+			}
+
+			if unicode.IsSpace(nextRune) || nextRune == ',' {
+				return nil
+			}
+
+			nextRune, err = reader.PopRune()
+			if err != nil {
+				os.Exit(int(exitcodes.ErrorReadingFile))
+			}
+
+			switch nextRune {
+			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+			default:
+				curState = stateInvalid
+
+			}
+		}
+	}
+}
+
 func generateNextToken() {
 	var nextRune rune
 
@@ -134,6 +348,16 @@ func generateNextToken() {
 			os.Exit(int(exitcodes.ErrorReadingFile))
 		}
 		tokenBuffer.Enqueue(resToken)
+	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-':
+		err := consumeNumber(nextRune)
+		if err != nil {
+			if err == io.EOF {
+				tokenBuffer.Enqueue(tokentypes.Invalid)
+				return
+			}
+			os.Exit(int(exitcodes.ErrorReadingFile))
+		}
+		tokenBuffer.Enqueue(tokentypes.Number)
 	default:
 		tokenBuffer.Enqueue(tokentypes.Invalid)
 	}

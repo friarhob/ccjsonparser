@@ -41,6 +41,27 @@ func TestConsume(t *testing.T) {
 				tokentypes.String, tokentypes.Colon, tokentypes.String,
 				tokentypes.EndJSON, tokentypes.EOF},
 		},
+		{
+			filepath: "../../testdata/step3/valid.json",
+			expected: []tokentypes.Token{tokentypes.StartJSON,
+				tokentypes.String, tokentypes.Colon, tokentypes.Boolean, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Boolean, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Null, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.String, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Number,
+				tokentypes.EndJSON, tokentypes.EOF},
+		},
+		{
+			filepath: "../../testdata/step3/valid_allnumbers.json",
+			expected: []tokentypes.Token{tokentypes.StartJSON,
+				tokentypes.String, tokentypes.Colon, tokentypes.Number, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Number, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Number, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Number, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Number, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Number,
+				tokentypes.EndJSON, tokentypes.EOF},
+		},
 	}
 
 	for _, testFile := range testFiles {
