@@ -366,7 +366,7 @@ func generateNextToken() {
 		tokenBuffer.Enqueue(tokentypes.String)
 	case 't', 'f', 'n':
 		resToken, err := consumeReservedWord(nextRune)
-		if err != nil && err != io.EOF {
+		if err != nil && err != io.EOF && err.Error() != "reserved word undefined" {
 			os.Exit(int(exitcodes.ErrorReadingFile))
 		}
 		tokenBuffer.Enqueue(resToken)
