@@ -38,7 +38,7 @@ func consumeString() error {
 			}
 
 			switch escapedRune {
-			case '"', '\\', '/', 'b', 'f', 'n', 'r':
+			case '"', '\\', '/', 'b', 'f', 'n', 'r', 't':
 			case 'u':
 				for i := 0; i < 4; i++ {
 					unicodeRune, err2 := reader.PopRune()
@@ -173,7 +173,7 @@ func consumeNumber(firstRune rune) error {
 				return invalidError
 			}
 
-			if unicode.IsSpace(nextRune) || nextRune == ',' || nextRune == '}' || nextRune == '[' {
+			if unicode.IsSpace(nextRune) || nextRune == ',' || nextRune == '}' || nextRune == ']' {
 				return nil
 			}
 
@@ -200,7 +200,7 @@ func consumeNumber(firstRune rune) error {
 				return invalidError
 			}
 
-			if unicode.IsSpace(nextRune) || nextRune == ',' || nextRune == '}' || nextRune == '[' {
+			if unicode.IsSpace(nextRune) || nextRune == ',' || nextRune == '}' || nextRune == ']' {
 				return nil
 			}
 
@@ -244,7 +244,7 @@ func consumeNumber(firstRune rune) error {
 				return invalidError
 			}
 
-			if unicode.IsSpace(nextRune) || nextRune == ',' || nextRune == '}' || nextRune == '[' {
+			if unicode.IsSpace(nextRune) || nextRune == ',' || nextRune == '}' || nextRune == ']' {
 				return nil
 			}
 
@@ -272,7 +272,7 @@ func consumeNumber(firstRune rune) error {
 			}
 
 			switch nextRune {
-			case '1', '2', '3', '4', '5', '6', '7', '8', '9':
+			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 				curState = stateExponentialValue
 			case '+', '-':
 				curState = stateExponentialSignal
@@ -290,7 +290,7 @@ func consumeNumber(firstRune rune) error {
 			}
 
 			switch nextRune {
-			case '1', '2', '3', '4', '5', '6', '7', '8', '9':
+			case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
 				curState = stateExponentialValue
 			default:
 				curState = stateInvalid
@@ -305,7 +305,7 @@ func consumeNumber(firstRune rune) error {
 				return invalidError
 			}
 
-			if unicode.IsSpace(nextRune) || nextRune == ',' || nextRune == '}' || nextRune == '[' {
+			if unicode.IsSpace(nextRune) || nextRune == ',' || nextRune == '}' || nextRune == ']' {
 				return nil
 			}
 
