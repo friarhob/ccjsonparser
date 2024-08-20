@@ -23,11 +23,23 @@ func TestConsume(t *testing.T) {
 		},
 		{
 			filepath: "../../testdata/step2/valid2.json",
-			expected: []tokentypes.Token{tokentypes.StartJSON, tokentypes.String, tokentypes.Colon, tokentypes.String, tokentypes.Comma, tokentypes.String, tokentypes.Colon, tokentypes.String, tokentypes.EndJSON, tokentypes.EOF},
+			expected: []tokentypes.Token{tokentypes.StartJSON,
+				tokentypes.String, tokentypes.Colon, tokentypes.String, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.String,
+				tokentypes.EndJSON, tokentypes.EOF},
 		},
 		{
 			filepath: "../../testdata/step2/invalid.json",
 			expected: []tokentypes.Token{tokentypes.StartJSON, tokentypes.String, tokentypes.Colon, tokentypes.String, tokentypes.Comma, tokentypes.EndJSON, tokentypes.EOF},
+		},
+		{
+			filepath: "../../testdata/step3/valid_noint.json",
+			expected: []tokentypes.Token{tokentypes.StartJSON,
+				tokentypes.String, tokentypes.Colon, tokentypes.Boolean, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Boolean, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Null, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.String,
+				tokentypes.EndJSON, tokentypes.EOF},
 		},
 	}
 
@@ -41,8 +53,7 @@ func TestConsume(t *testing.T) {
 
 		result := []tokentypes.Token{}
 		for {
-			var t tokentypes.Token
-			t = Consume()
+			t := Consume()
 			result = append(result, t)
 			if t == tokentypes.EOF {
 				break

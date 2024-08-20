@@ -2,6 +2,7 @@ package lexer
 
 import (
 	"bufio"
+	"errors"
 	"io"
 	"os"
 	"unicode"
@@ -11,24 +12,24 @@ import (
 	"github.com/friarhob/ccjsonparser/internal/tokentypes"
 )
 
-var reader bufio.Reader
+var reader adt.PeakableReader
 
-var buffer *adt.Queue
+var tokenBuffer *adt.Queue
 
 func StartLexer(file *os.File) {
-	reader = *bufio.NewReader(file)
-	buffer = adt.NewQueue()
+	reader = *adt.NewPeakableReader(bufio.NewReader(file))
+	tokenBuffer = adt.NewQueue()
 }
 
 func consumeString() error {
 	for {
-		nextRune, _, err := reader.ReadRune()
+		nextRune, err := reader.PopRune()
 		if err != nil {
 			return err
 		}
 
 		if nextRune == '\\' {
-			_, _, err := reader.ReadRune()
+			_, err := reader.PopRune()
 			if err != nil {
 				return err
 			}
@@ -40,15 +41,63 @@ func consumeString() error {
 	}
 }
 
+func consumeReservedWord(firstRune rune) (tokentypes.Token, error) {
+	undefinedErr := errors.New("reserved word undefined")
+	reservedWords := map[rune]string{
+		't': "rue",
+		'f': "alse",
+		'n': "ull",
+	}
+
+	var resToken tokentypes.Token
+
+	_, exists := reservedWords[firstRune]
+	if !exists {
+		return tokentypes.Invalid, undefinedErr
+	}
+
+	if firstRune == 'n' {
+		resToken = tokentypes.Null
+	} else {
+		resToken = tokentypes.Boolean
+	}
+
+	for _, targetRune := range reservedWords[firstRune] {
+		nextRune, err := reader.PopRune()
+		if err != nil {
+			if err != io.EOF {
+				os.Exit(int(exitcodes.ErrorReadingFile))
+			}
+			return tokentypes.Invalid, undefinedErr
+		}
+		if nextRune != targetRune {
+			return tokentypes.Invalid, undefinedErr
+		}
+	}
+
+	nextRune, err := reader.PeekRune()
+	if err != nil {
+		if err != io.EOF {
+			os.Exit(int(exitcodes.ErrorReadingFile))
+		}
+		return resToken, nil
+	}
+	if unicode.IsLetter(nextRune) {
+		return tokentypes.Invalid, undefinedErr
+	}
+
+	return resToken, nil
+}
+
 func generateNextToken() {
 	var nextRune rune
 
 	for {
 		var err error
-		nextRune, _, err = reader.ReadRune()
+		nextRune, err = reader.PopRune()
 		if err != nil {
 			if err == io.EOF {
-				buffer.Enqueue(tokentypes.EOF)
+				tokenBuffer.Enqueue(tokentypes.EOF)
 				return
 			}
 
@@ -62,42 +111,51 @@ func generateNextToken() {
 
 	switch nextRune {
 	case '{':
-		buffer.Enqueue(tokentypes.StartJSON)
+		tokenBuffer.Enqueue(tokentypes.StartJSON)
 	case '}':
-		buffer.Enqueue(tokentypes.EndJSON)
+		tokenBuffer.Enqueue(tokentypes.EndJSON)
 	case ':':
-		buffer.Enqueue(tokentypes.Colon)
+		tokenBuffer.Enqueue(tokentypes.Colon)
 	case ',':
-		buffer.Enqueue(tokentypes.Comma)
+		tokenBuffer.Enqueue(tokentypes.Comma)
 	case '"':
 		err := consumeString()
 		if err != nil {
 			if err == io.EOF {
-				buffer.Enqueue(tokentypes.Invalid)
+				tokenBuffer.Enqueue(tokentypes.Invalid)
 				return
 			}
 			os.Exit(int(exitcodes.ErrorReadingFile))
 		}
-		buffer.Enqueue(tokentypes.String)
+		tokenBuffer.Enqueue(tokentypes.String)
+	case 't', 'f', 'n':
+		resToken, err := consumeReservedWord(nextRune)
+		if err != nil && err != io.EOF {
+			os.Exit(int(exitcodes.ErrorReadingFile))
+		}
+		tokenBuffer.Enqueue(resToken)
 	default:
-		buffer.Enqueue(tokentypes.Invalid)
+		tokenBuffer.Enqueue(tokentypes.Invalid)
 	}
 
 }
 
 func Peek() tokentypes.Token {
-	if buffer.IsEmpty() {
+	if tokenBuffer.IsEmpty() {
 		generateNextToken()
 	}
-	res, _ := buffer.Peek()
+	res, _ := tokenBuffer.Peek()
 	return res.(tokentypes.Token)
 }
 
 func Consume() tokentypes.Token {
-	if buffer.IsEmpty() {
+	if tokenBuffer.IsEmpty() {
 		generateNextToken()
 	}
 
-	res, _ := buffer.Dequeue()
+	res, err := tokenBuffer.Dequeue()
+	if err != nil {
+		return tokentypes.Invalid
+	}
 	return res.(tokentypes.Token)
 }

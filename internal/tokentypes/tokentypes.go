@@ -10,6 +10,8 @@ const (
 	String
 	Colon
 	Comma
+	Boolean
+	Null
 )
 
 var names = [...]string{
@@ -20,8 +22,10 @@ var names = [...]string{
 	"String",
 	"Colon",
 	"Comma",
+	"Boolean",
+	"Null",
 }
 
 func (t Token) String() string {
-	return names[t]
+	return names[int(t)]
 }
