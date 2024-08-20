@@ -18,17 +18,24 @@ func parsePair() bool {
 		return false
 	}
 
-	curToken = lexer.Consume()
-	if curToken != tokentypes.String && curToken != tokentypes.Boolean && curToken != tokentypes.Null && curToken != tokentypes.Number {
+	switch lexer.Peek() {
+	case tokentypes.StartJSON:
+		if !parseObject() {
+			return false
+		}
+		return true
+
+	case tokentypes.String, tokentypes.Boolean, tokentypes.Null, tokentypes.Number:
+		_ = lexer.Consume()
+
+		return true
+
+	default:
 		return false
 	}
-
-	return true
 }
 
-func Validate(file *os.File) bool {
-	lexer.StartLexer(file)
-
+func parseObject() bool {
 	curToken := lexer.Consume()
 	if curToken != tokentypes.StartJSON {
 		return false
@@ -38,7 +45,6 @@ func Validate(file *os.File) bool {
 	hasNextPair := false
 
 	for {
-		reachEnd := false
 		nextToken := lexer.Peek()
 		switch nextToken {
 		case tokentypes.String:
@@ -62,18 +68,27 @@ func Validate(file *os.File) bool {
 			}
 
 			lexer.Consume()
-			reachEnd = true
+			return true
 
 		default:
 			return false
 		}
+	}
+}
 
-		if reachEnd {
-			break
+func Validate(file *os.File) bool {
+	lexer.StartLexer(file)
+
+	switch lexer.Peek() {
+	case tokentypes.StartJSON:
+		if !parseObject() {
+			return false
 		}
 
+		curToken := lexer.Consume()
+		return curToken == tokentypes.EOF
+	default:
+		return false
 	}
 
-	curToken = lexer.Consume()
-	return curToken == tokentypes.EOF
 }
