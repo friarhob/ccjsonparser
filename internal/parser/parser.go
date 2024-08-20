@@ -161,6 +161,15 @@ func Validate(file *os.File) bool {
 
 		curToken := lexer.Consume()
 		return curToken == tokentypes.EOF
+
+	case tokentypes.StartList:
+		if !parseList() {
+			return false
+		}
+
+		curToken := lexer.Consume()
+		return curToken == tokentypes.EOF
+
 	default:
 		return false
 	}

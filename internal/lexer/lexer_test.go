@@ -111,6 +111,17 @@ func TestConsume(t *testing.T) {
 				tokentypes.String, tokentypes.Colon, tokentypes.StartList, tokentypes.String, tokentypes.EndList,
 				tokentypes.EndJSON, tokentypes.EOF},
 		},
+		{
+			filepath: "../../testdata/test/fail1.json",
+			expected: []tokentypes.Token{tokentypes.String,
+				tokentypes.EOF},
+		},
+		{
+			filepath: "../../testdata/test/fail13.json",
+			expected: []tokentypes.Token{tokentypes.StartJSON,
+				tokentypes.String, tokentypes.Colon, tokentypes.Invalid, tokentypes.Number,
+				tokentypes.EndJSON, tokentypes.EOF},
+		},
 	}
 
 	for _, testFile := range testFiles {
