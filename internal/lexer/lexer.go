@@ -30,7 +30,8 @@ func consumeString() error {
 			return err
 		}
 
-		if nextRune == '\\' {
+		switch nextRune {
+		case '\\':
 			escapedRune, err := reader.PopRune()
 			if err != nil {
 				return err
@@ -51,13 +52,11 @@ func consumeString() error {
 			default:
 				return invalidError
 			}
-		}
 
-		if nextRune == '\t' {
+		case '\t', '\n':
 			return invalidError
-		}
 
-		if nextRune == '"' {
+		case '"':
 			return nil
 		}
 	}
