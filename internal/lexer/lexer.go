@@ -328,6 +328,10 @@ func generateNextToken() {
 		tokenBuffer.Enqueue(tokentypes.StartJSON)
 	case '}':
 		tokenBuffer.Enqueue(tokentypes.EndJSON)
+	case '[':
+		tokenBuffer.Enqueue(tokentypes.StartList)
+	case ']':
+		tokenBuffer.Enqueue(tokentypes.EndList)
 	case ':':
 		tokenBuffer.Enqueue(tokentypes.Colon)
 	case ',':

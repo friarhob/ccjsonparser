@@ -91,6 +91,26 @@ func TestConsume(t *testing.T) {
 				tokentypes.EndJSON,
 				tokentypes.EndJSON, tokentypes.EOF},
 		},
+		{
+			filepath: "../../testdata/step4/valid.json",
+			expected: []tokentypes.Token{tokentypes.StartJSON,
+				tokentypes.String, tokentypes.Colon, tokentypes.String, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Number, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.StartJSON, tokentypes.EndJSON, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.StartList, tokentypes.EndList,
+				tokentypes.EndJSON, tokentypes.EOF},
+		},
+		{
+			filepath: "../../testdata/step4/valid2.json",
+			expected: []tokentypes.Token{tokentypes.StartJSON,
+				tokentypes.String, tokentypes.Colon, tokentypes.String, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Number, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.StartJSON,
+				tokentypes.String, tokentypes.Colon, tokentypes.String,
+				tokentypes.EndJSON, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.StartList, tokentypes.String, tokentypes.EndList,
+				tokentypes.EndJSON, tokentypes.EOF},
+		},
 	}
 
 	for _, testFile := range testFiles {
