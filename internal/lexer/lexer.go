@@ -22,6 +22,8 @@ func StartLexer(file *os.File) {
 }
 
 func consumeString() error {
+	invalidError := errors.New("invalid rune in string")
+
 	for {
 		nextRune, err := reader.PopRune()
 		if err != nil {
@@ -33,8 +35,6 @@ func consumeString() error {
 			if err != nil {
 				return err
 			}
-
-			invalidError := errors.New("invalid escaped rune")
 
 			switch escapedRune {
 			case '"', '\\', '/', 'b', 'f', 'n', 'r':
@@ -51,6 +51,10 @@ func consumeString() error {
 			default:
 				return invalidError
 			}
+		}
+
+		if nextRune == '\t' {
+			return invalidError
 		}
 
 		if nextRune == '"' {
@@ -357,7 +361,7 @@ func generateNextToken() {
 	case '"':
 		err := consumeString()
 		if err != nil {
-			if err == io.EOF || err.Error() == "invalid escaped rune" {
+			if err == io.EOF || err.Error() == "invalid rune in string" {
 				tokenBuffer.Enqueue(tokentypes.Invalid)
 				return
 			}
