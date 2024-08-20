@@ -4,21 +4,6 @@
 
 This is a Go study project based on the [Coding Challenges](https://codingchallenges.fyi) exercises, particularly [this one](https://codingchallenges.fyi/challenges/challenge-json-parser).
 
-## Development Status
-
-This is still a work in progress. So far, we have:
-
-Validate | Done
-:--|:-:
-`{}` | ✓
-String keys and string values | ✓
-Boolean and null values | ✓
-Numeric values | ✓
-Object values | ✓
-Array values | ✓
-Array of JSONs | 
-
-
 ## Features
 
 - **Validate JSON**: Validate JSON from file or standard input.
