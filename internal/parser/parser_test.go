@@ -50,6 +50,14 @@ func TestValidate(t *testing.T) {
 			filepath: "../../testdata/step3/invalid.json",
 			expected: false,
 		},
+		{
+			filepath: "../../testdata/step4/valid_nolist.json",
+			expected: true,
+		},
+		{
+			filepath: "../../testdata/step4/valid2_nolist.json",
+			expected: true,
+		},
 	}
 
 	for _, testFile := range testFiles {

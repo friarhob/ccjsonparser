@@ -62,6 +62,35 @@ func TestConsume(t *testing.T) {
 				tokentypes.String, tokentypes.Colon, tokentypes.Number,
 				tokentypes.EndJSON, tokentypes.EOF},
 		},
+		{
+			filepath: "../../testdata/step3/valid_allnumbers.json",
+			expected: []tokentypes.Token{tokentypes.StartJSON,
+				tokentypes.String, tokentypes.Colon, tokentypes.Number, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Number, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Number, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Number, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Number, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Number,
+				tokentypes.EndJSON, tokentypes.EOF},
+		},
+		{
+			filepath: "../../testdata/step4/valid_nolist.json",
+			expected: []tokentypes.Token{tokentypes.StartJSON,
+				tokentypes.String, tokentypes.Colon, tokentypes.String, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Number, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.StartJSON, tokentypes.EndJSON,
+				tokentypes.EndJSON, tokentypes.EOF},
+		},
+		{
+			filepath: "../../testdata/step4/valid2_nolist.json",
+			expected: []tokentypes.Token{tokentypes.StartJSON,
+				tokentypes.String, tokentypes.Colon, tokentypes.String, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.Number, tokentypes.Comma,
+				tokentypes.String, tokentypes.Colon, tokentypes.StartJSON,
+				tokentypes.String, tokentypes.Colon, tokentypes.String,
+				tokentypes.EndJSON,
+				tokentypes.EndJSON, tokentypes.EOF},
+		},
 	}
 
 	for _, testFile := range testFiles {
