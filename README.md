@@ -14,8 +14,9 @@ Validate | Done
 String keys and string values | ✓
 Boolean and null values | ✓
 Numeric values | ✓
-Object and array values | 
-Lists of JSONs | 
+Object values | 
+Array values | 
+Array of JSONs | 
 
 
 ## Features
