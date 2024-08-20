@@ -13,6 +13,8 @@ const (
 	Boolean
 	Null
 	Number
+	StartList
+	EndList
 )
 
 var names = [...]string{
@@ -26,6 +28,8 @@ var names = [...]string{
 	"Boolean",
 	"Null",
 	"Number",
+	"StartList",
+	"EndList",
 }
 
 func (t Token) String() string {
