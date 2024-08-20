@@ -152,7 +152,7 @@ func consumeNumber(firstRune rune) error {
 				return invalidError
 			}
 
-			if unicode.IsSpace(nextRune) || nextRune == ',' {
+			if unicode.IsSpace(nextRune) || nextRune == ',' || nextRune == '}' {
 				return nil
 			}
 
@@ -179,7 +179,7 @@ func consumeNumber(firstRune rune) error {
 				return invalidError
 			}
 
-			if unicode.IsSpace(nextRune) || nextRune == ',' {
+			if unicode.IsSpace(nextRune) || nextRune == ',' || nextRune == '}' {
 				return nil
 			}
 
@@ -223,7 +223,7 @@ func consumeNumber(firstRune rune) error {
 				return invalidError
 			}
 
-			if unicode.IsSpace(nextRune) || nextRune == ',' {
+			if unicode.IsSpace(nextRune) || nextRune == ',' || nextRune == '}' {
 				return nil
 			}
 
@@ -284,7 +284,7 @@ func consumeNumber(firstRune rune) error {
 				return invalidError
 			}
 
-			if unicode.IsSpace(nextRune) || nextRune == ',' {
+			if unicode.IsSpace(nextRune) || nextRune == ',' || nextRune == '}' {
 				return nil
 			}
 
