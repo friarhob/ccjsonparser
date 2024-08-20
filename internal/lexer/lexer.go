@@ -29,9 +29,27 @@ func consumeString() error {
 		}
 
 		if nextRune == '\\' {
-			_, err := reader.PopRune()
+			escapedRune, err := reader.PopRune()
 			if err != nil {
 				return err
+			}
+
+			invalidError := errors.New("invalid escaped rune")
+
+			switch escapedRune {
+			case '"', '\\', '/', 'b', 'f', 'n', 'r':
+			case 'u':
+				for i := 0; i < 4; i++ {
+					unicodeRune, err2 := reader.PopRune()
+					if err2 != nil {
+						return err
+					}
+					if !unicode.Is(unicode.Hex_Digit, unicodeRune) {
+						return invalidError
+					}
+				}
+			default:
+				return invalidError
 			}
 		}
 
@@ -339,7 +357,7 @@ func generateNextToken() {
 	case '"':
 		err := consumeString()
 		if err != nil {
-			if err == io.EOF {
+			if err == io.EOF || err.Error() == "invalid escaped rune" {
 				tokenBuffer.Enqueue(tokentypes.Invalid)
 				return
 			}

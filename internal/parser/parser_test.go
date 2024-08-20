@@ -84,7 +84,7 @@ func TestValidate(t *testing.T) {
 		{filepath: "../../testdata/test/fail12.json", expected: false},
 		{filepath: "../../testdata/test/fail13.json", expected: false},
 		{filepath: "../../testdata/test/fail14.json", expected: false},
-		// {filepath: "../../testdata/test/fail15.json", expected: false},
+		{filepath: "../../testdata/test/fail15.json", expected: false},
 		// {filepath: "../../testdata/test/fail16.json", expected: false},
 		// {filepath: "../../testdata/test/fail17.json", expected: false},
 		// {filepath: "../../testdata/test/fail18.json", expected: false},
