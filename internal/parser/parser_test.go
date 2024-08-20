@@ -26,7 +26,6 @@ func TestValidate(t *testing.T) {
 			filepath: "../../testdata/step2/invalid.json",
 			expected: false,
 		},
-
 		{
 			filepath: "../../testdata/step2/valid2.json",
 			expected: true,
@@ -34,6 +33,10 @@ func TestValidate(t *testing.T) {
 		{
 			filepath: "../../testdata/step2/invalid2.json",
 			expected: false,
+		},
+		{
+			filepath: "../../testdata/step3/valid_noint.json",
+			expected: true,
 		},
 	}
 

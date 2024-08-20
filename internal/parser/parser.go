@@ -19,7 +19,7 @@ func parsePair() bool {
 	}
 
 	curToken = lexer.Consume()
-	if curToken != tokentypes.String {
+	if curToken != tokentypes.String && curToken != tokentypes.Boolean && curToken != tokentypes.Null {
 		return false
 	}
 
