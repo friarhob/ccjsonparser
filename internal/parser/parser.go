@@ -25,6 +25,12 @@ func parsePair() bool {
 		}
 		return true
 
+	case tokentypes.StartList:
+		if !parseList() {
+			return false
+		}
+		return true
+
 	case tokentypes.String, tokentypes.Boolean, tokentypes.Null, tokentypes.Number:
 		_ = lexer.Consume()
 
@@ -69,6 +75,74 @@ func parseObject() bool {
 
 			lexer.Consume()
 			return true
+
+		default:
+			return false
+		}
+	}
+}
+
+func parseList() bool {
+	curToken := lexer.Consume()
+	if curToken != tokentypes.StartList {
+		return false
+	}
+
+	hasElem := false
+	hasNextElem := false
+
+	for {
+		nextToken := lexer.Peek()
+		switch nextToken {
+		case tokentypes.String, tokentypes.Boolean, tokentypes.Null, tokentypes.Number:
+			if hasElem && !hasNextElem {
+				return false
+			}
+			lexer.Consume()
+
+			hasElem = true
+			hasNextElem = lexer.Peek() == tokentypes.Comma
+			if hasNextElem {
+				lexer.Consume()
+			}
+
+		case tokentypes.EndList:
+			if hasNextElem {
+				return false
+			}
+
+			lexer.Consume()
+			return true
+
+		case tokentypes.StartJSON:
+			if hasElem && !hasNextElem {
+				return false
+			}
+
+			if !parseObject() {
+				return false
+			}
+
+			hasElem = true
+			hasNextElem = lexer.Peek() == tokentypes.Comma
+			if hasNextElem {
+				lexer.Consume()
+			}
+
+		case tokentypes.StartList:
+			if hasElem && !hasNextElem {
+				return false
+			}
+
+			if !parseList() {
+				return false
+			}
+
+			hasElem = true
+			hasNextElem = lexer.Peek() == tokentypes.Comma
+			if hasNextElem {
+				lexer.Consume()
+			}
 
 		default:
 			return false

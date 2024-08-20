@@ -15,7 +15,7 @@ String keys and string values | ✓
 Boolean and null values | ✓
 Numeric values | ✓
 Object values | ✓
-Array values | 
+Array values | ✓
 Array of JSONs | 
 
 
