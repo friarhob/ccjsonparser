@@ -13,7 +13,7 @@ Validate | Done
 `{}` | ✓
 String keys and string values | ✓
 Boolean and null values | ✓
-Numeric values | 
+Numeric values | ✓
 Object and array values | 
 Lists of JSONs | 
 
