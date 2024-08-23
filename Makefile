@@ -9,6 +9,7 @@ all: build test
 build:
 	@echo "Building the project..."
 	go build -o $(BINARY_NAME) $(BUILD_DIR)
+	chmod +x $(BINARY_NAME)
 	@echo "Build complete."
 
 # Clean target

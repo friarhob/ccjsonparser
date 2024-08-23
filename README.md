@@ -21,7 +21,7 @@ You can build and install `ccjsonparser` from source using Go. Make sure you hav
 
 1. Build the executable:
    ```bash
-   go build -o ccjsonparser ./cmd/ccjsonparser
+   make build
    ```
 
 1. (Optional) Move the binary to a directory in your PATH for easy access:
